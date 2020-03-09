@@ -1,0 +1,12 @@
+#payment-options{
+ text-align: center;
+}
+#payment-options button{
+  width: 270px;
+  background-color: #348ceb;
+  padding: 10px;
+  border: none;
+  outline: none;
+  color: white;
+  font-weight: bold;
+}
