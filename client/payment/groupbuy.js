@@ -118,13 +118,12 @@ function renderButton(){
 
 
 class GroupBuyPayment {
-  constructor(client,user,product) {
+  constructor(user,product) {
     renderButton();
     this.ref = document.getElementById("gb-pay");
     this.button = document.getElementById("gb-button");
     this.count = document.getElementById("gb-count");
     this.info = document.getElementById("gb-info-button");
-    this.clientID = client;
     this.userToken = user;
     this.productID = product;
     this.updateCount()

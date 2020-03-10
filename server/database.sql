@@ -7,6 +7,12 @@ CREATE TABLE products(
 	requiredGroup INT
 );
 
+CREATE TABLE groups(
+  groupID VARCHAR(35) NOT NULL PRIMARY KEY,
+  productID VARCHAR(35),
+  FOREIGN KEY (productID) REFERENCES products(productID)
+);
+
 CREATE TABLE orders(
 	orderID VARCHAR(35) NOT NULL PRIMARY KEY,
 	productID VARCHAR(35) NOT NULL,
@@ -14,14 +20,10 @@ CREATE TABLE orders(
 	orderTime BIGINT NOT NULL,
   groupID VARCHAR(35),
 	FOREIGN KEY (productID) REFERENCES products(productID),
-  FOREIGN KEY (groupID) REFERENCES groups(groupID)
+  FOREIGN KEY (groupID) REFERENCES groups(groupID) ON DELETE CASCADE
 );
 
-CREATE TABLE groups(
-  groupID VARCHAR(35) NOT NULL PRIMARY KEY,
-  productID VARCHAR(35),
-  FOREIGN KEY (productID) REFERENCES products(productID)
-);
+
 
 INSERT INTO products VALUES ("12345",5);
 INSERT INTO products VALUES ("67890",5);

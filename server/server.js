@@ -74,6 +74,8 @@ async function verify(token) {
 app.get('/groupcount', returnGroupData);
 app.post('/submitorder', submitOrder);
 app.post('/orderdetails', returnOrderDetails);
+app.post('/admin/orders', returnOrders);
+app.post('/admin/groups', returnGroups);
 
 async function getRequiredGroup(productID){
   let [rows, fields] = await connection.promise().query('SELECT requiredGroup FROM products WHERE productID = ?',[productID])
@@ -105,6 +107,44 @@ async function getOrderDetails(orderID,googleID){
   }
 }
 
+async function checkGroupNumbers(productID){
+  const requiredGroup = await getRequiredGroup(productID);
+  const groupSize = await getGroupSize(productID);
+  if (requiredGroup == "err" || groupSize == "err") {
+    return "err"
+  }
+  else {
+    console.log("checking size");
+    console.log(parseInt(groupSize.groupSize));
+    console.log(parseInt(requiredGroup.requiredGroup));
+    if (parseInt(groupSize[0].groupSize) == parseInt(requiredGroup[0].requiredGroup)) {
+      console.log("size equal");
+      return createGroup(productID)
+    }
+  }
+}
+
+async function createGroup(productID){
+  const groupID = shortid.generate();
+  let [rows, fields, err] = await connection.promise().query('INSERT INTO groups VALUES(?,?)',[groupID,productID])
+  if (err) {
+    console.log(err);
+    return "err"
+  }
+  else {
+    console.log("created group");
+    let [rows, fields, err] = await connection.promise().query('UPDATE orders SET groupID = ? WHERE productID = ? AND groupID IS NULL',[groupID,productID])
+    if (err){
+      console.log(err);
+      return "err"
+    }
+    else {
+      console.log("added orders to group");
+      return groupID;
+    }
+  }
+}
+
 //-------------------API RESPONSES-----------------------------
 async function returnGroupData(req,res,next){
   const requiredGroup = await getRequiredGroup(req.query.productID);
@@ -131,6 +171,7 @@ async function submitOrder(req,res,next){
         res.sendStatus(400);
   		}
       else {
+        checkGroupNumbers(req.body.productID);
         res.json({
           orderID: orderID
         })
@@ -140,6 +181,32 @@ async function submitOrder(req,res,next){
   else {
     res.sendStatus(401);
   }
+}
+
+async function returnOrders(req,res,next){
+  connection.query('SELECT * FROM orders WHERE productID = ?',[req.body.productID],
+  function(err, results, fields) {
+  	if (err) {
+  		console.log(err);
+      res.sendStatus(400);
+  	}
+    else {
+      res.json(results)
+    }
+	});
+}
+
+async function returnGroups(req,res,next){
+  connection.query('SELECT * FROM groups WHERE productID = ?',[req.body.productID],
+  function(err, results, fields) {
+  	if (err) {
+  		console.log(err);
+      res.sendStatus(400);
+  	}
+    else {
+      res.json(results)
+    }
+	});
 }
 
 async function returnOrderDetails(req,res,next){
