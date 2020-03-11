@@ -72,6 +72,7 @@ async function verify(token) {
 }
 
 app.get('/groupcount', returnGroupData);
+app.get('/price', returnPrice);
 app.post('/submitorder', submitOrder);
 app.post('/orderdetails', returnOrderDetails);
 app.post('/admin/orders', returnOrders);
@@ -79,6 +80,16 @@ app.post('/admin/groups', returnGroups);
 
 async function getRequiredGroup(productID){
   let [rows, fields] = await connection.promise().query('SELECT requiredGroup FROM products WHERE productID = ?',[productID])
+  if (rows.length == 0){
+    return "err"
+  }
+  else {
+    return rows;
+  }
+}
+
+async function getProductPrice(productID){
+  let [rows, fields] = await connection.promise().query('SELECT price FROM products WHERE productID = ?',[productID])
   if (rows.length == 0){
     return "err"
   }
@@ -114,11 +125,7 @@ async function checkGroupNumbers(productID){
     return "err"
   }
   else {
-    console.log("checking size");
-    console.log(parseInt(groupSize.groupSize));
-    console.log(parseInt(requiredGroup.requiredGroup));
     if (parseInt(groupSize[0].groupSize) == parseInt(requiredGroup[0].requiredGroup)) {
-      console.log("size equal");
       return createGroup(productID)
     }
   }
@@ -160,11 +167,23 @@ async function returnGroupData(req,res,next){
   }
 }
 
+async function returnPrice(req,res,next){
+  const price = await getProductPrice(req.query.productID);
+  if (price == "err") {
+    res.sendStatus(400)
+  }
+  else {
+    res.json({
+      price: price[0].price
+    });
+  }
+}
+
 async function submitOrder(req,res,next){
   const orderID = shortid.generate();
   const googleID = await verify(req.body.token)
   if (googleID != "e" && googleID != "error") {
-    connection.query('INSERT INTO orders VALUES(?,?,?,?,?)',[orderID,req.body.productID,googleID,Math.round((new Date()).getTime() / 1000),null],
+    connection.query('INSERT INTO orders VALUES(?,?,?,?,?,?,?)',[orderID,req.body.productID,req.body.platformID,googleID,req.body.address,Math.round((new Date()).getTime() / 1000),null],
   	function(err, results, fields) {
   		if (err) {
   			console.log(err);

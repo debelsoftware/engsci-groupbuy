@@ -1,5 +1,6 @@
 #payment-options{
- text-align: center;
+  display: none;
+  text-align: center;
 }
 #payment-options button{
   width: 270px;
@@ -9,4 +10,11 @@
   outline: none;
   color: white;
   font-weight: bold;
+}
+#addressInfo{
+  text-align: center;
+}
+#payment-method{
+  text-align: center;
+  display: none;
 }

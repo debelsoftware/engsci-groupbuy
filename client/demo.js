@@ -7,5 +7,6 @@ function onSignIn(googleUser) {
 
 document.getElementById("run").addEventListener('click', function(){
   const productID = document.getElementById("product-input").value;
-  window.location = `./payment?product=${productID}`
+  const clientID = document.getElementById("client-input").value;
+  window.location = `./payment?product=${productID}&client=${clientID}`
 })

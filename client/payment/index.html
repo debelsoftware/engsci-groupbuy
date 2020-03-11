@@ -7,10 +7,19 @@
     <title></title>
   </head>
   <body>
-    <div id="productInfo">
+    <div id="addressInfo">
+      <textarea name="name" placeholder="Address" id="address" rows="8" cols="80"></textarea>
+      <br><br>
+      <button type="button" id="proceed" name="button">Continue to payment</button>
+    </div>
+    <div id="payment-method">
+      <h1>Please pick a payment option</h1>
+      <button type="button" id="card" name="button">Card</button>
+      <br><br>
+      <button type="button" id="paypal" name="button">PayPal</button>
     </div>
     <div id="payment-options">
-      <button type="button" name="button">Pay by card</button>
+      <button type="button" name="button">Buy it now</button>
       <div id="gb-pay"></div>
     </div>
   </body>

@@ -26,6 +26,10 @@ if(productID != null && productID != ""){
       let row = document.createElement('tr');
       let order_id = document.createElement('td');
       order_id.textContent = order.orderID;
+      let platform_id = document.createElement('td');
+      platform_id.textContent = order.platformID;
+      let address = document.createElement('td');
+      address.textContent = order.address;
       let product_id = document.createElement('td');
       product_id.textContent = order.productID;
       let created_time = document.createElement('td');
@@ -33,6 +37,8 @@ if(productID != null && productID != ""){
       let group_id = document.createElement('td');
       group_id.textContent = order.groupID;
       row.appendChild(order_id);
+      row.appendChild(platform_id);
+      row.appendChild(address);
       row.appendChild(product_id);
       row.appendChild(created_time);
       row.appendChild(group_id);

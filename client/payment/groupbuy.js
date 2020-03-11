@@ -118,15 +118,38 @@ function renderButton(){
 
 
 class GroupBuyPayment {
-  constructor(user,product) {
+  constructor(client,user,product,name,address) {
     renderButton();
     this.ref = document.getElementById("gb-pay");
     this.button = document.getElementById("gb-button");
     this.count = document.getElementById("gb-count");
     this.info = document.getElementById("gb-info-button");
+    this.price = document.getElementById("gb-inner-text");
     this.userToken = user;
     this.productID = product;
-    this.updateCount()
+    this.address = `${name} ${address}`;
+    this.clientID = client;
+    this.updateCount();
+    this.updatePrice();
+  }
+  updatePrice(){
+    const selfReference = this;
+    fetch(`http://localhost:80/price?productID=${this.productID}`)
+    .then(
+      function(response) {
+        if (response.status !== 200) {
+          console.log('Looks like there was a problem. Status Code: ' +
+            response.status);
+          return;
+        }
+        response.json().then(function(data) {
+          selfReference.price.textContent = `£${data.price} with group buy`
+        });
+      }
+    )
+    .catch(function(err) {
+      console.log('Fetch Error :-S', err);
+    });
   }
   updateCount(){
     const selfReference = this;
@@ -151,6 +174,8 @@ class GroupBuyPayment {
     return fetch('http://localhost:80/submitorder', {
       method: 'POST',
       body: JSON.stringify({
+        platformID: this.clientID,
+        address: this.address,
         productID: this.productID,
         token: this.userToken,
       }),
