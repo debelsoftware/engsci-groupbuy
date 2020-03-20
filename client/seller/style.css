@@ -1,0 +1,23 @@
+#create-product-backdrop{
+  display: none;
+  text-align: center;
+  position: fixed;
+  top:0;
+  left:0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+#create-product-window{
+  display: inline-block;
+  margin: 20px auto 0 auto;
+  text-align: center;
+  background-color: white;
+  padding: 10px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+h1,h2,h3,h4{
+  font-family: sans-serif;
+  margin: 10px;
+}

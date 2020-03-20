@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
   next();
 });
 
@@ -77,6 +78,8 @@ app.post('/submitorder', submitOrder);
 app.post('/orderdetails', returnOrderDetails);
 app.post('/admin/orders', returnOrders);
 app.post('/admin/groups', returnGroups);
+app.delete('/admin/deleteproduct', deleteProductListing);
+app.post('/admin/createproduct', createProductListing);
 
 async function getRequiredGroup(productID){
   let [rows, fields] = await connection.promise().query('SELECT requiredGroup FROM products WHERE productID = ?',[productID])
@@ -149,6 +152,29 @@ async function createGroup(productID){
       console.log("added orders to group");
       return groupID;
     }
+  }
+}
+
+async function createProduct(productID, groupNumber, price){
+  let [rows, fields, err] = await connection.promise().query('INSERT INTO products VALUES(?,?,?)',[productID, groupNumber, price])
+  if (err) {
+    console.log(err);
+    return "err"
+  }
+  else {
+    console.log("created product");
+    return "created"
+  }
+}
+async function deleteProduct(productID){
+  let [rows, fields, err] = await connection.promise().query('DELETE FROM products WHERE productID = ?',[productID])
+  if (err) {
+    console.log(err);
+    return "err"
+  }
+  else {
+    console.log("deleted product");
+    return "deleted"
   }
 }
 
@@ -252,5 +278,52 @@ async function returnOrderDetails(req,res,next){
   }
   else {
     res.sendStatus(400)
+  }
+}
+
+async function createProductListing(req,res,next){
+  const productID = req.body.productID;
+  const requiredGroup = req.body.requiredGroup;
+  const price = req.body.price;
+  if (Number.isInteger(requiredGroup)) {
+    if (requiredGroup > 1) {
+      if (Number.isFinite(price)) {
+        let product = await createProduct(productID,requiredGroup,price.toFixed(2))
+        if (product == "err") {
+          res.sendStatus(400)
+        }
+        else {
+          res.json({
+            status: "done"
+          })
+        }
+      }
+      else {
+        res.json({
+          status: "Price is not a valid value"
+        })
+      }
+    }
+    else {
+      res.json({
+        status: "Required group must be greater than 1"
+      })
+    }
+  }
+  else {
+    res.json({
+      status: "Required group is not an integer"
+    })
+  }
+}
+
+async function deleteProductListing(req, res, next){
+  const productID = req.body.productID;
+  let deleted = deleteProduct(productID);
+  if (deleted == "err"){
+    res.sendStatus(400);
+  }
+  else {
+    res.sendStatus(200);
   }
 }

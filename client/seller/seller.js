@@ -2,7 +2,38 @@ const urlParams = new URLSearchParams(window.location.search);
 const productID = urlParams.get("product");
 document.getElementById("search").addEventListener("click", function(){
   window.location = `../seller?product=${document.getElementById("product-id").value}`
-})
+});
+document.getElementById("create-product").addEventListener("click", function(){
+  document.getElementById('create-product-backdrop').style.display = "block"
+});
+document.getElementById("create-product-close-button").addEventListener("click", function(){
+  document.getElementById('create-product-backdrop').style.display = "none"
+});
+document.getElementById("delete").addEventListener("click", deleteProduct);
+document.getElementById("create-product-button").addEventListener("click", createProduct);
+
+
+function deleteProduct(){
+  if(confirm("ARE YOU SURE YOU WANT TO DELETE THIS PRODUCT. Clicking ok will delete this item")){
+    fetch('http://localhost:80/admin/deleteproduct', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        productID: document.getElementById("product-id").value
+      }),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    }).then(function(response) {
+      if (response.status == 200){
+        alert("product deleted");
+      }
+      else {
+        alert("failed to delete product")
+      }
+    })
+    .catch(error => console.log(error));
+  }
+}
 
 if(productID != null && productID != ""){
   fetch('http://localhost:80/admin/orders', {
@@ -72,6 +103,37 @@ if(productID != null && productID != ""){
       row.appendChild(group_id);
       row.appendChild(product_id);
       document.getElementById("group-table").appendChild(row)
+    }
+  })
+  .catch(error => console.log(error));
+}
+
+function createProduct(){
+  fetch('http://localhost:80/admin/createproduct', {
+    method: 'POST',
+    body: JSON.stringify({
+      productID: document.getElementById("create-product-id").value,
+      requiredGroup: parseInt(document.getElementById("create-product-group").value),
+      price: parseFloat(document.getElementById("create-product-price").value)
+    }),
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status == 200){
+      return response.json();
+    }
+    else {
+      alert("failed to get group details")
+    }
+  })
+  .then(function(jsonResponse) {
+    if (jsonResponse.status != "done") {
+      alert(jsonResponse.status)
+    }
+    else{
+      document.getElementById('create-product-backdrop').style.display = "none"
+      alert("product created")
     }
   })
   .catch(error => console.log(error));

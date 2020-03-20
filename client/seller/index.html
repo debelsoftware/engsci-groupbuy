@@ -2,10 +2,26 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="./style.css">
     <title></title>
   </head>
   <body>
-    <input id="product-id" type="text" name="" value=""><button id="search" type="button" name="button">Search</button>
+    <nav>
+      <input id="product-id" type="text" name="" value=""><button id="search" type="button" name="button">Search</button><button id="delete" type="button" name="button">Delete Product</button>
+      <br><br>
+      <button id="create-product" type="button" name="button">Create Product Listing</button>
+    </nav>
+    <div id="create-product-backdrop">
+      <div class="" id="create-product-window">
+        <h1>Create Product</h1>
+        <input id="create-product-id" type="text" name="" placeholder="Product ID" value="">
+        <input id="create-product-group" type="number" name="" placeholder="Required Group Number" value="">
+        <input id="create-product-price" type="number" name="" placeholder="Discount Price eg(56.34)" value="">
+        <button type="button" id="create-product-button" name="button">Create</button>
+        <br><br>
+        <button type="button" id="create-product-close-button" name="button">Close</button>
+      </div>
+    </div>
     <br><br>
     <h1>Groups:</h1>
     <div class="">
