@@ -79,6 +79,7 @@ app.post('/orderdetails', returnOrderDetails);
 app.post('/admin/orders', returnOrders);
 app.post('/admin/groups', returnGroups);
 app.delete('/admin/deleteproduct', deleteProductListing);
+app.delete('/admin/deleteorder', deleteSingleOrder);
 app.post('/admin/createproduct', createProductListing);
 
 async function getRequiredGroup(productID){
@@ -174,6 +175,17 @@ async function deleteProduct(productID){
   }
   else {
     console.log("deleted product");
+    return "deleted"
+  }
+}
+async function deleteOrder(orderID, userID){
+  let [rows, fields, err] = await connection.promise().query('DELETE FROM orders WHERE orderID = ? AND userID = ?',[orderID, userID])
+  if (err) {
+    console.log(err);
+    return "err"
+  }
+  else {
+    console.log("deleted order");
     return "deleted"
   }
 }
@@ -325,5 +337,22 @@ async function deleteProductListing(req, res, next){
   }
   else {
     res.sendStatus(200);
+  }
+}
+
+async function deleteSingleOrder(req, res, next){
+  const googleID = await verify(req.body.token)
+  if (googleID != "e" && googleID != "error") {
+    const orderID = req.body.orderID;
+    let deleted = deleteOrder(orderID, googleID);
+    if (deleted == "err"){
+      res.sendStatus(400);
+    }
+    else {
+      res.sendStatus(200);
+    }
+  }
+  else {
+    res.sendStatus(400)
   }
 }

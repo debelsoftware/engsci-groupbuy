@@ -10,6 +10,7 @@ document.getElementById("create-product-close-button").addEventListener("click",
   document.getElementById('create-product-backdrop').style.display = "none"
 });
 document.getElementById("delete").addEventListener("click", deleteProduct);
+document.getElementById("remove-order").addEventListener("click", deleteOrder);
 document.getElementById("create-product-button").addEventListener("click", createProduct);
 
 
@@ -29,6 +30,29 @@ function deleteProduct(){
       }
       else {
         alert("failed to delete product")
+      }
+    })
+    .catch(error => console.log(error));
+  }
+}
+
+function deleteOrder(){
+  if(confirm("ARE YOU SURE YOU WANT TO DELETE THIS ORDER. Clicking ok will delete this order")){
+    fetch('http://localhost:80/admin/deleteorder', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        token: sessionStorage.getItem('token'),
+        orderID: document.getElementById("orderID").value
+      }),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    }).then(function(response) {
+      if (response.status == 200){
+        alert("remove order request sent");
+      }
+      else {
+        alert("failed to delete order")
       }
     })
     .catch(error => console.log(error));
